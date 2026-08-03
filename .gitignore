@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# このプロジェクト用の追加設定
+.vscode/
+cafe.db
