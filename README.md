@@ -42,14 +42,19 @@ memo	         メモ
 
 ## 実行方法
 
-\`\`\`bash
+
 1.必要なライブラリをインストールする  
-pip install bottle  
+\`\`\`bash
+pip install bottle 
+\`\`\`
 
 2.データベースを作成する  
+\`\`\`bash
 python create_db.py  
+\`\`\`
 
 3.サーバーを起動する  
+\`\`\`bash
 python3 app.py  
 \`\`\`
 
