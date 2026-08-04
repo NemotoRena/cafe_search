@@ -27,18 +27,19 @@
 Excelで店舗情報を管理し、CSV形式（cafe_list.csv）として保存しています。  
 create_db.pyを実行すると、CSVを読み込んでSQLiteデータベース（cafe.db）を作成します。  
 
-カラム名	       内容  
-id	           店舗を識別する番号(自動採番)  
-name	         店名  
-address	       住所  
-rating	       星評価(1〜5)  
-smoking	       喫煙区分(禁煙 / 分煙 / 全席喫煙可)  
-hours	         営業時間  
-morning	       モーニング有無  
-night	         夜営業有無(18時以降)  
-closed_day	   定休日  
-photo	         写真ファイル名  
-memo	         メモ  
+| カラム名 | 内容 |
+|----------|------|
+| id | 店舗ID（自動採番） |
+| name | 店名 |
+| address | 住所 |
+| rating | 星評価（1〜5） |
+| smoking | 喫煙区分（禁煙・分煙・全席喫煙可） |
+| hours | 営業時間 |
+| morning | モーニング有無 |
+| night | 夜営業有無 |
+| closed_day | 定休日 |
+| photo | 写真ファイル名 |
+| memo | メモ |　　
 
 ## 実行方法
 
@@ -47,7 +48,7 @@ memo	         メモ
 pip install bottle 
 ```
 
-2.データベースを作成する  
+2.データベースを作成、CSVデータを登録   
 ```bash
 python3 create_db.py  
 ```
