@@ -42,20 +42,19 @@ memo	         メモ
 
 ## 実行方法
 
-
 1.必要なライブラリをインストールする  
-\`\`\`bash  
+```bash
 pip install bottle 
-\`\`\`  
+```
 
 2.データベースを作成する  
-\`\`\`bash  
-python create_db.py  
-\`\`\`  
+```bash
+python3 create_db.py  
+```
 
 3.サーバーを起動する  
-\`\`\`bash  
+```bash
 python3 app.py  
-\`\`\`  
+```
 
 起動後、ブラウザで http://localhost:8080 を開くとサイトが表示されます。  
