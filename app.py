@@ -105,7 +105,7 @@ def home():
     li img {{ border-radius: 6px; margin-right: 12px; }}
     </style>
 
-    <h1>喫茶店マップサイト準備中</h1>
+    <h1>喫茶店検索サイト</h1>
 
     <!--
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
