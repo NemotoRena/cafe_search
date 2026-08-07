@@ -45,7 +45,7 @@ def home():
 
     # 検索フォームのHTML
     html = """
-    <h1>喫茶店マップサイト準備中</h1>
+    <h1>喫茶店検索サイト準備中</h1>
     <form method="get">
         <label><input type="checkbox" name="smoking" value="nonsmoking"> 禁煙・分煙のみ</label>
         <label><input type="checkbox" name="smoking" value="smoking"> 全席喫煙可のみ</label>
