@@ -9,7 +9,7 @@ def home():
     cafes = cur.fetchall()
     conn.close()
 
-    html = "<h1>喫茶店マップサイト準備中</h1><ul>"
+    html = "<h1>喫茶店検索サイト準備中</h1><ul>"
     for name, address, rating in cafes:
         html += f"<li>{name}(星{rating}) - {address}</li>"
     html += "</ul>"
