@@ -1,4 +1,4 @@
-from bottle import route, run, request, static_file
+from bottle import route, run, request, static_file, redirect
 import sqlite3
 
 @route('/photo/<filename>')
@@ -16,9 +16,9 @@ def cafe_detail(cafe_id):
     if not cafe:
         return "お店が見つかりませんでした"
 
-    name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
+    name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe #変数の設定
     star_display = "★" * rating + "☆" * (5 - rating)
-    photo_html = f'<img src="/photo/{photo}" style="width:100%; max-width:400px; border-radius:8px;">' if photo else ""
+    photo_html = f'<img src="/photo/{photo}" style="width:400px; height:400px; object-fit:cover; border-radius:8px;">' if photo else ""
 
     return f"""
     <style>
@@ -43,7 +43,102 @@ def cafe_detail(cafe_id):
         <p><span class="label">定休日</span>{closed_day}</p>
         <p><span class="label">メモ</span>{memo}</p>
     </div>
+    <a href="/cafe/{cafe_id}/edit"><button style="background-color:#6B4A2E; color:white; border:none; padding:8px 16px; border-radius:4px; margin-top:16px; cursor:pointer;">この店を編集する</button></a>
+    <form method="post" action="/cafe/{cafe_id}/remove" onsubmit="return confirm('本当に削除しますか?')">
+    <button type="submit" style="background-color:#A32D2D; color:white; border:none; padding:8px 16px; border-radius:4px; margin-top:16px; cursor:pointer;">この店を削除する</button>
+</form>
     """
+@route('/cafe/<cafe_id>/remove', method='POST')
+def remove_cafe(cafe_id):
+    conn = sqlite3.connect('cafe.db')
+    cur = conn.cursor()
+    cur.execute("DELETE FROM cafes WHERE id = ?", (cafe_id,))
+    conn.commit()
+    conn.close()
+    redirect('/')
+
+#更新画面の編集
+@route('/cafe/<cafe_id>/edit')
+def edit_cafe_form(cafe_id):
+    conn = sqlite3.connect('cafe.db')
+    cur = conn.cursor()
+    cur.execute("SELECT name, address, rating, smoking, hours, morning, night, closed_day, photo, memo FROM cafes WHERE id = ?", (cafe_id,))
+    cafe = cur.fetchone()
+    conn.close()
+
+    if not cafe:
+        return "お店が見つかりませんでした"
+
+    name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+    <meta charset="UTF-8">
+    <title>編集</title>
+    </head>
+    <body>
+    <h1>{name} を編集</h1>
+    <form method="post" action="/cafe/{cafe_id}/update">
+        <p>店名<br><input type="text" name="name" value="{name}" style="width:300px;"></p>
+        <p>住所<br><input type="text" name="address" value="{address}" style="width:300px;"></p>
+        <p>星評価<br><input type="number" name="rating" value="{rating}" min="1" max="5"></p>
+        <p>喫煙区分<br>
+        <select name="smoking">
+            <option value="禁煙" {"selected" if smoking == "禁煙" else ""}>禁煙</option>
+            <option value="分煙" {"selected" if smoking == "分煙" else ""}>分煙</option>
+            <option value="全席喫煙可" {"selected" if smoking == "全席喫煙可" else ""}>全席喫煙可</option>
+        </select>
+        </p>
+        <p>営業時間<br><input type="text" name="hours" value="{hours}" style="width:300px;"></p>
+        <p>モーニング<br>
+        <select name="morning">
+            <option value="あり" {"selected" if morning == "あり" else ""}>あり</option>
+            <option value="なし" {"selected" if morning == "なし" else ""}>なし</option>
+        </select>
+        </p>
+        <p>夜営業<br>
+        <select name="night">
+            <option value="あり" {"selected" if night == "あり" else ""}>あり</option>
+            <option value="なし" {"selected" if night == "なし" else ""}>なし</option>
+        </select>
+        </p>
+        <p>定休日<br><input type="text" name="closed_day" value="{closed_day}" style="width:300px;"></p>
+        <p>写真ファイル名<br><input type="text" name="photo" value="{photo}" style="width:300px;"></p>
+        <p>メモ<br><textarea name="memo" style="width:300px;">{memo}</textarea></p>
+        <button type="submit">保存する</button>
+    </form>
+    <a href="/cafe/{cafe_id}">キャンセルして戻る</a>
+
+    </body>
+    </html>
+    """
+
+@route('/cafe/<cafe_id>/update', method='POST')
+def update_cafe(cafe_id):
+    name = request.forms.getunicode('name') #get()だと文字化けしたためgetunicode()に変更
+    address = request.forms.getunicode('address')
+    rating = request.forms.getunicode('rating')
+    smoking = request.forms.getunicode('smoking')
+    hours = request.forms.getunicode('hours')
+    morning = request.forms.getunicode('morning')
+    night = request.forms.getunicode('night')
+    closed_day = request.forms.getunicode('closed_day')
+    photo = request.forms.getunicode('photo')
+    memo = request.forms.getunicode('memo')
+
+    conn = sqlite3.connect('cafe.db')
+    cur = conn.cursor()
+    cur.execute('''
+        UPDATE cafes
+        SET name = ?, address = ?, rating = ?, smoking = ?, hours = ?, morning = ?, night = ?, closed_day = ?, photo = ?, memo = ?
+        WHERE id = ?
+    ''', (name, address, rating, smoking, hours, morning, night, closed_day, photo, memo, cafe_id))
+    conn.commit()
+    conn.close()
+
+    redirect(f'/cafe/{cafe_id}')
 
 @route('/')
 def home():
@@ -56,18 +151,28 @@ def home():
     conditions = []
     params = []
 
+    #SQLインジェクション対策のためプレースホルダ（?）を使用
     if smoking == 'nonsmoking_only':
-        conditions.append("smoking = '禁煙'")
+        conditions.append("smoking = ?")
+        params.append('禁煙')
+
     elif smoking == 'nonsmoking_and_separated':
-        conditions.append("smoking IN ('禁煙', '分煙')")
+        conditions.append("smoking IN (?, ?)")
+        params.append('禁煙')
+        params.append('分煙')
+
     elif smoking == 'smoking':
-        conditions.append("smoking = '全席喫煙可'")
+        conditions.append("smoking = ?")
+        params.append('全席喫煙可')
 
     if morning == 'yes':
-        conditions.append("morning = 'あり'")
+        conditions.append("morning = ?")
+        params.append('あり')
 
     if night == 'yes':
-        conditions.append("night = 'あり'")
+        conditions.append("night = ?")
+        params.append('あり')
+
 
     sql = "SELECT id, name, address, rating, photo FROM cafes"
     if conditions:
@@ -75,22 +180,10 @@ def home():
 
     conn = sqlite3.connect('cafe.db') # ① データベースファイルに接続する
     cur = conn.cursor() # ② 操作するための「道具(カーソル)」を用意する
-    cur.execute(sql) # ③ 用意しておいたSQL文を実行する
+    cur.execute(sql, params) # ③ 用意しておいたSQL文を実行する
     cafes = cur.fetchall() # ④ 実行結果(該当する店のデータ)を全部受け取る
     conn.close() # ⑤ 用が済んだので、データベースとの接続を切る
-
-    # JavaScriptにピンの情報を渡すための準備
-    """import json
-    pins = [
-        {"name": name, "address": address, "rating": rating, "lat": lat, "lng": lng}
-        for name, address, rating in cafes
-        if lat is not None and lng is not None
-    ]
-    pins_json = json.dumps(pins, ensure_ascii=False)
-    """
-
     
-
     # 検索フォームのHTML
     html = f"""
     <style>
@@ -106,11 +199,6 @@ def home():
     </style>
 
     <h1>喫茶店検索サイト</h1>
-
-    <!--
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    -->
     <form method="get">
         <label><input type="radio" name="smoking" value="nonsmoking_only" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_only" else ""}> 禁煙のみ</label>
         <label><input type="radio" name="smoking" value="nonsmoking_and_separated" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_and_separated" else ""}> 禁煙+分煙(禁煙席あり)</label>
@@ -133,15 +221,6 @@ def home():
             radio.dataset.wasChecked = "true";
         }}
     }}
-    /*var map = L.map('map').setView([35.681236, 139.767125], 12);
-    L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
-        attribution: '&copy; OpenStreetMap contributors'
-    }}).addTo(map);
-    var pins = [];
-    pins.forEach(function(p) {{
-        L.marker([p.lat, p.lng]).addTo(map)
-            .bindPopup(p.name + "(星" + p.rating + ")<br>" + p.address);
-    }}); */
 
     </script>
     <ul>
@@ -156,4 +235,4 @@ def home():
     
     return html
 
-run(host='localhost', port=8080, debug=True)
+run(host='localhost', port=8080, debug=False, reloader=False)
