@@ -60,7 +60,7 @@ def home():
             li {{ background-color: #FFFFFF; margin-bottom: 12px; padding: 12px; border-radius: 8px; display: flex; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }}
             li img {{ border-radius: 6px; margin-right: 12px; }}
         </style>
-        <h1>喫茶店マップサイト準備中</h1>
+        <h1>喫茶店検索サイト準備中</h1>
         <form method="get">
             <label><input type="radio" name="smoking" value="nonsmoking_only" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_only" else ""}> 禁煙のみ</label>
             <label><input type="radio" name="smoking" value="nonsmoking_and_separated" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_and_separated" else ""}> 禁煙+分煙(禁煙席あり)</label>
