@@ -58,4 +58,4 @@ python3 create_db.py
 python3 app.py  
 ```
 
-起動後、ブラウザで http://localhost:8080 を開くとサイトが表示されます。  
+起動後、ブラウザで http://localhost:8080 を開くとサイトが表示されます。
