@@ -45,7 +45,11 @@ create_db.pyを実行すると、CSVを読み込んでSQLiteデータベース�
 
 1.必要なライブラリをインストールする  
 ```bash
-pip install bottle 
+#Bottleの場合
+pip install bottle  
+
+#Flaskの場合
+pip install flask
 ```
 
 2.データベースを作成、CSVデータを登録   
