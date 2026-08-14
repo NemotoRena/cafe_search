@@ -1,5 +1,9 @@
 from bottle import route, run, request, static_file, redirect
 import sqlite3
+import html
+
+def safe(v):
+    return html.escape(v) if v else ""
 
 @route('/photo/<filename>')
 def serve_photo(filename):
@@ -17,9 +21,17 @@ def cafe_detail(cafe_id):
         return "お店が見つかりませんでした"
 
     name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe #変数の設定
+    name = safe(name)
+    address = safe(address)
+    smoking = safe(smoking)
+    hours = safe(hours)
+    morning = safe(morning)
+    night = safe(night)
+    closed_day = safe(closed_day)
+    memo = safe(memo)
     star_display = "★" * rating + "☆" * (5 - rating)
-    photo_html = f'<img src="/photo/{photo}" style="width:400px; height:400px; object-fit:cover; border-radius:8px;">' if photo else ""
-
+    photo_html = f'<img src="/photo/{safe(photo)}" style="width:400px; height:400px; object-fit:cover; border-radius:8px;">' if photo else ""
+    
     return f"""
     <style>
         body {{ font-family: sans-serif; background-color: #FAF6F0; color: #4A3B2C; max-width: 800px; margin: 0 auto; padding: 20px; }}
@@ -48,6 +60,7 @@ def cafe_detail(cafe_id):
     <button type="submit" style="background-color:#A32D2D; color:white; border:none; padding:8px 16px; border-radius:4px; margin-top:16px; cursor:pointer;">この店を削除する</button>
 </form>
     """
+
 @route('/cafe/<cafe_id>/remove', method='POST')
 def remove_cafe(cafe_id):
     conn = sqlite3.connect('cafe.db')
@@ -70,6 +83,13 @@ def edit_cafe_form(cafe_id):
         return "お店が見つかりませんでした"
 
     name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
+
+    name = safe(name)
+    address = safe(address)
+    hours = safe(hours)
+    closed_day = safe(closed_day)
+    photo = safe(photo)
+    memo = safe(memo)
 
     return f"""
     <!DOCTYPE html>
@@ -227,6 +247,9 @@ def home():
     """
 
     for id, name, address, rating, photo in cafes:
+        name = safe(name)
+        address = safe(address)
+        photo = safe(photo)
         star_display = "★" * rating + "☆" * (5 - rating)
         if photo:
             html += f'<li><a href="/cafe/{id}" style="text-decoration:none; color:inherit; display:flex; align-items:center;"><img src="/photo/{photo}" style="width:80px; height:80px; object-fit:cover; vertical-align:middle;"> {name}({star_display}) - {address}</a></li>'
