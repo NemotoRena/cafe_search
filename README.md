@@ -55,11 +55,17 @@ pip install flask
 
 2.データベースを作成、CSVデータを登録   
 ```bash
+#windowsの場合  
+python create_db.py  
+#Linuxの場合  
 python3 create_db.py  
 ```
 
 3.サーバーを起動する  
 ```bash
+#windowsの場合  
+python app.py  
+#Linuxの場合
 python3 app.py  
 ```
 
