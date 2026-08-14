@@ -1,5 +1,9 @@
 from flask import Flask, request, send_from_directory, redirect
 import sqlite3
+import html
+
+def safe(v):
+    return html.escape(v) if v else ""
 
 app = Flask(__name__)
 
@@ -19,8 +23,16 @@ def cafe_detail(cafe_id):
         return "お店が見つかりませんでした"
 
     name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
+    name = safe(name)
+    address = safe(address)
+    smoking = safe(smoking)
+    hours = safe(hours)
+    morning = safe(morning)
+    night = safe(night)
+    closed_day = safe(closed_day)
+    memo = safe(memo)
     star_display = "★" * rating + "☆" * (5 - rating)
-    photo_html = f'<img src="/photo/{photo}" style="width:400px; height:400px; object-fit:cover; border-radius:8px;">' if photo else ""
+    photo_html = f'<img src="/photo/{safe(photo)}" style="width:400px; height:400px; object-fit:cover; border-radius:8px;">' if photo else ""
 
     return f"""
     <style>
@@ -72,6 +84,12 @@ def edit_cafe_form(cafe_id):
         return "お店が見つかりませんでした"
 
     name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
+    name = safe(name)
+    address = safe(address)
+    hours = safe(hours)
+    closed_day = safe(closed_day)
+    photo = safe(photo)
+    memo = safe(memo)
 
     return f"""
     <!DOCTYPE html>
@@ -220,6 +238,9 @@ def home():
     """
 
     for id, name, address, rating, photo in cafes:
+        name = safe(name)
+        address = safe(address)
+        photo = safe(photo)
         star_display = "★" * rating + "☆" * (5 - rating)
         if photo:
             html += f'<li><a href="/cafe/{id}" style="text-decoration:none; color:inherit; display:flex; align-items:center;"><img src="/photo/{photo}" style="width:80px; height:80px; object-fit:cover; vertical-align:middle;"> {name}({star_display}) - {address}</a></li>'
