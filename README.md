@@ -4,12 +4,13 @@
 ## 使用技術
 ・Python  
 ・Bottle (Webフレームワーク)  
+・Flask (Webフレームワーク)  
 ・SQLite  
 ・HTML/CSS/JavaScript  
 
 ## 開発環境
 ・エディタ:Visual Studio Code  
-・OS:Windows(開発時)、Ubuntu(動作確認)  
+・OS:Windows、Ubuntu  
 ・Python のバージョン:3.12  
 ・リモート接続:VS Code Remote - SSH  
 
