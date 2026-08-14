@@ -64,17 +64,13 @@ python3 create_db.py
 
 3.サーバーを起動する  
 ```bash
-#windows・Bottle版の場合  
+# Bottle版  
 python bottle/app.py  
 
-#windows・Flask版の場合  
+# Flask版  
 python flask/app_flask.py  
 
-#Linux・Bottle版の場合  
-python3 bottle/app.py  
-
-#Linux・Flask版の場合  
-python3 flask/app_flask.py  
+※ Windowsでは「python」、Linux/macOSでは「python3」を使用。  
 ```
 
 起動後、ブラウザで http://localhost:8080 を開くとサイトが表示されます。
