@@ -75,4 +75,5 @@ python flask/app_flask.py
 ※ Windowsでは「python」、Linux/macOSでは「python3」を使用。  
 ```
 
-起動後、ブラウザで http://localhost:8080 を開くとサイトが表示されます。
+起動後、ブラウザで http://localhost:8080 を開く、  
+もしくはVScodeの場合右下の「ブラウザを開く」を押下するとサイトが表示されます。
