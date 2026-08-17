@@ -1,5 +1,7 @@
 # cafe search
-喫茶店情報を検索・管理できるWebアプリケーション
+喫茶店情報を検索・管理できるWebアプリケーション  
+
+https://github.com/user-attachments/assets/18cdfef8-72db-4560-b8de-3408117f3afb
 
 ## 使用技術
 ・Python  
