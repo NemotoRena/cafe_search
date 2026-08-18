@@ -143,16 +143,16 @@ def edit_cafe_form(cafe_id):
 #更新処理の実行
 @app.route('/cafe/<cafe_id>/update', methods=['POST'])
 def update_cafe(cafe_id):
-    name = request.form.get('name')
-    address = request.form.get('address')
-    rating = request.form.get('rating')
-    smoking = request.form.get('smoking')
-    hours = request.form.get('hours')
-    morning = request.form.get('morning')
-    night = request.form.get('night')
-    closed_day = request.form.get('closed_day')
-    photo = request.form.get('photo')
-    memo = request.form.get('memo')
+    name = request.forms.getunicode('name')
+    address = request.forms.getunicode('address')
+    rating = request.forms.getunicode('rating')
+    smoking = request.forms.getunicode('smoking')
+    hours = request.forms.getunicode('hours')
+    morning = request.forms.getunicode('morning')
+    night = request.forms.getunicode('night')
+    closed_day = request.forms.getunicode('closed_day')
+    photo = request.forms.getunicode('photo')
+    memo = request.forms.getunicode('memo')
 
     conn = sqlite3.connect('cafe.db')
     cur = conn.cursor()
@@ -258,4 +258,4 @@ def home():
     return html
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=8081, debug=True)
+    app.run(host='localhost', port=8081, debug=False)
