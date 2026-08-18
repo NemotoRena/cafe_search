@@ -2,19 +2,23 @@ from flask import Flask, request, send_from_directory, redirect
 import sqlite3
 import html
 
+#XSS対策としてHTMLの特殊文字を無害化する関数を設定
 def safe(v):
     return html.escape(v) if v else ""
 
 app = Flask(__name__)
 
+#写真ファイルの表示
 @app.route('/photo/<filename>')
 def serve_photo(filename):
     return send_from_directory('photo', filename)
 
+#詳細ページの表示
 @app.route('/cafe/<cafe_id>')
 def cafe_detail(cafe_id):
     conn = sqlite3.connect('cafe.db')
     cur = conn.cursor()
+    #SQLインジェクション対策のためプレースホルダ（?）を使用
     cur.execute("SELECT name, address, rating, smoking, hours, morning, night, closed_day, photo, memo FROM cafes WHERE id = ?", (cafe_id,))
     cafe = cur.fetchone()
     conn.close()
@@ -62,7 +66,8 @@ def cafe_detail(cafe_id):
     <button type="submit" style="background-color:#A32D2D; color:white; border:none; padding:8px 16px; border-radius:4px; margin-top:16px; cursor:pointer;">この店を削除する</button>
 </form>
     """
-
+    
+#削除処理の実行
 @app.route('/cafe/<cafe_id>/remove', methods=['POST'])
 def remove_cafe(cafe_id):
     conn = sqlite3.connect('cafe.db')
@@ -72,6 +77,7 @@ def remove_cafe(cafe_id):
     conn.close()
     return redirect('/')
 
+#更新画面の表示
 @app.route('/cafe/<cafe_id>/edit')
 def edit_cafe_form(cafe_id):
     conn = sqlite3.connect('cafe.db')
@@ -134,6 +140,7 @@ def edit_cafe_form(cafe_id):
     </html>
     """
 
+#更新処理の実行
 @app.route('/cafe/<cafe_id>/update', methods=['POST'])
 def update_cafe(cafe_id):
     name = request.form.get('name')
@@ -159,14 +166,15 @@ def update_cafe(cafe_id):
 
     return redirect(f'/cafe/{cafe_id}')
 
+#トップページの表示
 @app.route('/')
 def home():
-    # URLについている検索条件を受け取る(まだ何も選ばれていなければ空)
+    #URLについている検索条件を受け取る(何も選ばれていなければ空)
     smoking = request.args.get('smoking')
     morning = request.args.get('morning')
     night = request.args.get('night')
 
-    # 検索条件を組み立てる
+    #検索条件を組み立てる
     conditions = []
     params = []
 
@@ -193,11 +201,11 @@ def home():
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
 
-    conn = sqlite3.connect('cafe.db')
-    cur = conn.cursor()
-    cur.execute(sql, params)
-    cafes = cur.fetchall()
-    conn.close()
+    conn = sqlite3.connect('cafe.db') #① データベースファイルに接続する
+    cur = conn.cursor() #② 操作するための道具(カーソル)を用意する
+    cur.execute(sql, params) #③ 用意しておいたSQL文を実行する
+    cafes = cur.fetchall() #④ 実行結果(該当する店のデータ)を全部受け取る
+    conn.close() #⑤ データベースとの接続を切る
 
     html = f"""
     <style>
