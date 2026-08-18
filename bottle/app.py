@@ -2,17 +2,21 @@ from bottle import route, run, request, static_file, redirect
 import sqlite3
 import html
 
+#XSS対策としてHTMLの特殊文字を無害化する関数を設定
 def safe(v):
     return html.escape(v) if v else ""
 
+#写真ファイルの表示
 @route('/photo/<filename>')
 def serve_photo(filename):
     return static_file(filename, root='photo')
 
+#詳細ページの表示 
 @route('/cafe/<cafe_id>')
 def cafe_detail(cafe_id):
     conn = sqlite3.connect('cafe.db')
     cur = conn.cursor()
+    #SQLインジェクション対策のためプレースホルダ（?）を使用  
     cur.execute("SELECT name, address, rating, smoking, hours, morning, night, closed_day, photo, memo FROM cafes WHERE id = ?", (cafe_id,))
     cafe = cur.fetchone()
     conn.close()
@@ -20,7 +24,7 @@ def cafe_detail(cafe_id):
     if not cafe:
         return "お店が見つかりませんでした"
 
-    name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe #変数の設定
+    name, address, rating, smoking, hours, morning, night, closed_day, photo, memo = cafe
     name = safe(name)
     address = safe(address)
     smoking = safe(smoking)
@@ -61,6 +65,7 @@ def cafe_detail(cafe_id):
 </form>
     """
 
+#削除処理の実行  
 @route('/cafe/<cafe_id>/remove', method='POST')
 def remove_cafe(cafe_id):
     conn = sqlite3.connect('cafe.db')
@@ -70,7 +75,7 @@ def remove_cafe(cafe_id):
     conn.close()
     redirect('/')
 
-#更新画面の編集
+#更新画面の表示
 @route('/cafe/<cafe_id>/edit')
 def edit_cafe_form(cafe_id):
     conn = sqlite3.connect('cafe.db')
@@ -135,6 +140,7 @@ def edit_cafe_form(cafe_id):
     </html>
     """
 
+#更新処理の実行 
 @route('/cafe/<cafe_id>/update', method='POST')
 def update_cafe(cafe_id):
     name = request.forms.getunicode('name') #get()だと文字化けしたためgetunicode()に変更
@@ -160,9 +166,10 @@ def update_cafe(cafe_id):
 
     redirect(f'/cafe/{cafe_id}')
 
+#トップページの表示  
 @route('/')
 def home():
-    # URLについている検索条件を受け取る(まだ何も選ばれていなければ空)
+    #URLについている検索条件を受け取る(何も選ばれていなければ空)
     smoking = request.query.smoking
     morning = request.query.morning
     night = request.query.night
@@ -171,7 +178,6 @@ def home():
     conditions = []
     params = []
 
-    #SQLインジェクション対策のためプレースホルダ（?）を使用
     if smoking == 'nonsmoking_only':
         conditions.append("smoking = ?")
         params.append('禁煙')
@@ -193,18 +199,17 @@ def home():
         conditions.append("night = ?")
         params.append('あり')
 
-
-    sql = "SELECT id, name, address, rating, photo FROM cafes"
+　　sql = "SELECT id, name, address, rating, photo FROM cafes"
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
 
-    conn = sqlite3.connect('cafe.db') # ① データベースファイルに接続する
-    cur = conn.cursor() # ② 操作するための「道具(カーソル)」を用意する
-    cur.execute(sql, params) # ③ 用意しておいたSQL文を実行する
-    cafes = cur.fetchall() # ④ 実行結果(該当する店のデータ)を全部受け取る
-    conn.close() # ⑤ 用が済んだので、データベースとの接続を切る
+    conn = sqlite3.connect('cafe.db') #① データベースファイルに接続する
+    cur = conn.cursor() #② 操作するための「道具(カーソル)」を用意する
+    cur.execute(sql, params) #③ 用意しておいたSQL文を実行する
+    cafes = cur.fetchall() #④ 実行結果(該当する店のデータ)を全部受け取る
+    conn.close() #⑤ データベースとの接続を切る
     
-    # 検索フォームのHTML
+    #検索フォームのHTML
     html = f"""
     <style>
     body {{ font-family: sans-serif; background-color: #FAF6F0; color: #4A3B2C; max-width: 800px; margin: 0 auto; padding: 20px; }}
