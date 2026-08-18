@@ -11,7 +11,7 @@ app = Flask(__name__)
 #写真ファイルの表示
 @app.route('/photo/<filename>')
 def serve_photo(filename):
-    return send_from_directory('photo', filename)
+    return send_from_directory('../photo', filename)
 
 #詳細ページの表示
 @app.route('/cafe/<cafe_id>')
