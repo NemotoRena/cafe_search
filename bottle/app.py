@@ -174,7 +174,7 @@ def home():
     morning = request.query.morning
     night = request.query.night
 
-    # 検索条件を組み立てる
+    #検索条件を組み立てる
     conditions = []
     params = []
 
@@ -204,7 +204,7 @@ def home():
         sql += " WHERE " + " AND ".join(conditions)
 
     conn = sqlite3.connect('cafe.db') #① データベースファイルに接続する
-    cur = conn.cursor() #② 操作するための「道具(カーソル)」を用意する
+    cur = conn.cursor() #② 操作するための道具(カーソル)を用意する
     cur.execute(sql, params) #③ 用意しておいたSQL文を実行する
     cafes = cur.fetchall() #④ 実行結果(該当する店のデータ)を全部受け取る
     conn.close() #⑤ データベースとの接続を切る
