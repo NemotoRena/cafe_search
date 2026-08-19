@@ -174,8 +174,9 @@ def home():
     morning = request.query.morning
     night = request.query.night
 
-    #検索条件を組み立てる
+    #ユーザーが選んだ検索条件を入れるリスト
     conditions = []
+    #検索条件に対応する値を入れるリスト
     params = []
 
     if smoking == 'nonsmoking_only':
