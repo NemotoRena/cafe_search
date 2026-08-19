@@ -199,7 +199,7 @@ def home():
         conditions.append("night = ?")
         params.append('あり')
 
-　　sql = "SELECT id, name, address, rating, photo FROM cafes"
+    sql = "SELECT id, name, address, rating, photo FROM cafes"
     if conditions:
         sql += " WHERE " + " AND ".join(conditions)
 
@@ -234,8 +234,7 @@ def home():
         <br>
         <button type="submit">検索</button>
     </form>
-    <!--<div id="map" style="height: 400px; width: 100%;"></div>-->
-    <!-- 検索ボタンをクリックで解除するためJavaScriptを使用 -->
+    <!-- ラジオボタンをクリックで解除するためJavaScriptを使用 -->
     <script>
     function toggleRadio(radio) {{
         if (radio.dataset.wasChecked === "true") {{
