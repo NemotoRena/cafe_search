@@ -96,6 +96,7 @@ def edit_cafe_form(cafe_id):
     closed_day = safe(closed_day)
     photo = safe(photo)
     memo = safe(memo)
+    rating = safe(str(rating))
 
     return f"""
     <!DOCTYPE html>
