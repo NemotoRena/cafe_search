@@ -12,7 +12,7 @@ https://github.com/user-attachments/assets/18cdfef8-72db-4560-b8de-3408117f3afb
 
 ## 開発環境
 ・エディタ:Visual Studio Code  
-・OS:Windows、Ubuntu  
+・OS:Ubuntu  
 ・Python のバージョン:3.12  
 ・リモート接続:VS Code Remote - SSH  
 
