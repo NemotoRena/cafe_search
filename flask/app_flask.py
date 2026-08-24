@@ -1,6 +1,7 @@
 from flask import Flask, request, send_from_directory, redirect
 import sqlite3
 import html
+import os
 
 #XSS対策としてHTMLの特殊文字を無害化する関数を設定
 def safe(v):
@@ -8,10 +9,12 @@ def safe(v):
 
 app = Flask(__name__)
 
+PHOTO_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'photo')
+
 #写真ファイルの表示
 @app.route('/photo/<filename>')
 def serve_photo(filename):
-    return send_from_directory('../photo', filename)
+    return send_from_directory(PHOTO_DIR, filename)
 
 #詳細ページの表示
 @app.route('/cafe/<cafe_id>')
