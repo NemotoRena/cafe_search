@@ -53,6 +53,7 @@ pip install bottle
 #Flaskの場合
 pip install flask
 ```
+※Linuxの場合、sudo apt install python3-bottle でも導入できます。
 
 2.データベースを作成、CSVデータを登録   
 ```bash
