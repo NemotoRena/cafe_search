@@ -53,24 +53,24 @@ pip install bottle
 #Flaskの場合
 pip install flask
 ```
-※Linuxの場合、sudo apt install python3-bottle でも導入できます。
+※Linuxの場合、sudo apt install python3-bottle / sudo apt install python3-flask でも導入できます。
 
 2.データベースを作成、CSVデータを登録   
 ```bash
-#windowsの場合  
-python create_db.py
-
 #Linuxの場合  
-python3 create_db.py  
+python3 create_db.py
+
+#windowsの場合  
+python create_db.py  
 ```
 
 3.サーバーを起動する  
 ```bash
 # Bottle版  
-python bottle/app.py  
+python3 bottle/app.py  
 
 # Flask版  
-python flask/app_flask.py  
+python3 flask/app_flask.py  
 
 ※ Windowsでは「python」、Linux/macOSでは「python3」を使用。  
 ```
