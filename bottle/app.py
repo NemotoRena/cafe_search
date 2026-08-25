@@ -172,8 +172,8 @@ def update_cafe(cafe_id):
 def home():
     #URLについている検索条件を受け取る(何も選ばれていなければ空)
     #smokingは複数選択可能なため、getall()でリストとして受け取る
-    raw_list = request.query.getall('smoking') #smoking_list = request.query.getall('smoking')だと文字化けして検索結果が出ない
-    smoking_list = [s.encode('latin-1').decode('utf-8') for s in raw_list]
+    raw_list = request.query.getall('smoking')
+    smoking_list = [s.encode('latin-1').decode('utf-8') for s in raw_list] #smoking_list = request.query.getall('smoking')だと文字化けして検索結果が出ないためutf-8で読み直す
     morning = request.query.morning
     night = request.query.night
 
