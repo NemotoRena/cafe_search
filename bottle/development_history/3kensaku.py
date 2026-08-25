@@ -4,7 +4,8 @@ import sqlite3
 @route('/')
 def home():
     # URLについている検索条件を受け取る(まだ何も選ばれていなければ空)
-    smoking = request.query.smoking
+    raw_list = request.query.getall('smoking')
+    smoking_list = [s.encode('latin-1').decode('utf-8') for s in raw_list]
     morning = request.query.morning
     night = request.query.night
 
@@ -12,18 +13,10 @@ def home():
     conditions = []
     params = []
 
-    if smoking == 'nonsmoking_only':
-        conditions.append("smoking = ?")
-        params.append('禁煙')
-        
-    elif smoking == 'nonsmoking_and_separated':
-        conditions.append("smoking IN (?, ?)")
-        params.append('禁煙')
-        params.append('分煙')
-        
-    elif smoking == 'smoking':
-        conditions.append("smoking = ?")
-        params.append('全席喫煙可')
+    if smoking_list:
+        placeholders = ', '.join(['?'] * len(smoking_list))
+        conditions.append(f"smoking IN ({placeholders})")
+        params.extend(smoking_list)
         
     if morning == 'yes':
         conditions.append("morning = ?")
@@ -39,22 +32,23 @@ def home():
 
     conn = sqlite3.connect('cafe.db')
     cur = conn.cursor()
-    cur.execute(sql)
+    cur.execute(sql, params)
     cafes = cur.fetchall()
     conn.close()
 
     # 検索フォームのHTML
-    html = """
-    <h1>喫茶店検索サイト準備中</h1>
-    <form method="get">
-        <label><input type="checkbox" name="smoking" value="nonsmoking"> 禁煙・分煙のみ</label>
-        <label><input type="checkbox" name="smoking" value="smoking"> 全席喫煙可のみ</label>
-        <br>
-        <label><input type="checkbox" name="morning" value="yes"> モーニングあり</label>
-        <label><input type="checkbox" name="night" value="yes"> 夜営業あり(18時以降)</label>
-        <br>
-        <button type="submit">検索</button>
-    </form>
+    html = f"""
+        <h1>喫茶店マップサイト準備中</h1>
+        <form method="get">
+            <label><input type="checkbox" name="smoking" value="禁煙" {"checked" if "禁煙" in smoking_list else ""}> 禁煙</label>
+            <label><input type="checkbox" name="smoking" value="分煙" {"checked" if "分煙" in smoking_list else ""}> 分煙</label>
+            <label><input type="checkbox" name="smoking" value="全席喫煙可" {"checked" if "全席喫煙可" in smoking_list else ""}> 全席喫煙可</label>
+            <br>
+            <label><input type="checkbox" name="morning" value="yes" {"checked" if morning == "yes" else ""}> モーニングあり</label>
+            <label><input type="checkbox" name="night" value="yes" {"checked" if night == "yes" else ""}> 夜営業あり(18時以降)</label>
+            <br>
+            <button type="submit">検索</button>
+        </form>
     <ul>
     """
     for name, address, rating in cafes:
