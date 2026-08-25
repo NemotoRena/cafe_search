@@ -231,17 +231,6 @@ def home():
         <br>
         <button type="submit">検索</button>
     </form>
-    <script>
-    function toggleRadio(radio) {{
-        if (radio.dataset.wasChecked === "true") {{
-            radio.checked = false;
-            radio.dataset.wasChecked = "false";
-        }} else {{
-            document.querySelectorAll('input[name="' + radio.name + '"]').forEach(r => r.dataset.wasChecked = "false");
-            radio.dataset.wasChecked = "true";
-        }}
-    }}
-    </script>
     <ul>
     """
 
