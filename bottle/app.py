@@ -171,7 +171,9 @@ def update_cafe(cafe_id):
 @route('/')
 def home():
     #URLについている検索条件を受け取る(何も選ばれていなければ空)
-    smoking = request.query.smoking
+    #smokingは複数選択可能なため、getall()でリストとして受け取る
+    raw_list = request.query.getall('smoking') #smoking_list = request.query.getall('smoking')だと文字化けして検索結果が出ない
+    smoking_list = [s.encode('latin-1').decode('utf-8') for s in raw_list]
     morning = request.query.morning
     night = request.query.night
 
@@ -180,18 +182,10 @@ def home():
     #検索条件に対応する値を入れるリスト
     params = []
 
-    if smoking == 'nonsmoking_only':
-        conditions.append("smoking = ?")
-        params.append('禁煙')
-
-    elif smoking == 'nonsmoking_and_separated':
-        conditions.append("smoking IN (?, ?)")
-        params.append('禁煙')
-        params.append('分煙')
-
-    elif smoking == 'smoking':
-        conditions.append("smoking = ?")
-        params.append('全席喫煙可')
+    if smoking_list:
+        placeholders = ', '.join(['?'] * len(smoking_list))
+        conditions.append(f"smoking IN ({placeholders})")
+        params.extend(smoking_list)
 
     if morning == 'yes':
         conditions.append("morning = ?")
@@ -227,28 +221,15 @@ def home():
 
     <h1>喫茶店検索サイト</h1>
     <form method="get">
-        <label><input type="radio" name="smoking" value="nonsmoking_only" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_only" else ""}> 禁煙のみ</label>
-        <label><input type="radio" name="smoking" value="nonsmoking_and_separated" onclick="toggleRadio(this)" {"checked" if smoking == "nonsmoking_and_separated" else ""}> 禁煙+分煙(禁煙席あり)</label>
-        <label><input type="radio" name="smoking" value="smoking" onclick="toggleRadio(this)" {"checked" if smoking == "smoking" else ""}> 全席喫煙可</label>
+        <label><input type="checkbox" name="smoking" value="禁煙" {"checked" if "禁煙" in smoking_list else ""}> 禁煙</label>
+        <label><input type="checkbox" name="smoking" value="分煙" {"checked" if "分煙" in smoking_list else ""}> 分煙</label>
+        <label><input type="checkbox" name="smoking" value="全席喫煙可" {"checked" if "全席喫煙可" in smoking_list else ""}> 全席喫煙可</label>
         <br>
         <label><input type="checkbox" name="morning" value="yes" {"checked" if morning == "yes" else ""}> モーニングあり</label>
         <label><input type="checkbox" name="night" value="yes" {"checked" if night == "yes" else ""}> 夜営業あり(18時以降)</label>
         <br>
         <button type="submit">検索</button>
     </form>
-    <!-- ラジオボタンをクリックで解除するためJavaScriptを使用 -->
-    <script>
-    function toggleRadio(radio) {{
-        if (radio.dataset.wasChecked === "true") {{
-            radio.checked = false;
-            radio.dataset.wasChecked = "false";
-        }} else {{
-            document.querySelectorAll('input[name="' + radio.name + '"]').forEach(r => r.dataset.wasChecked = "false");
-            radio.dataset.wasChecked = "true";
-        }}
-    }}
-
-    </script>
     <ul>
     """
 
