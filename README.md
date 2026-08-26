@@ -58,7 +58,7 @@ pip install flask
 ```bash
 python3 create_db.py  
 ```
-#Windowsの場合はpython create_db.py  
+#Windowsの場合は python create_db.py  
 
 3.サーバーを起動する  
 ```bash
